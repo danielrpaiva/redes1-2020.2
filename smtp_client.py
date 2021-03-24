@@ -3,12 +3,17 @@ from socket import *
 
 
 portaServidor = 587
-nomeServidor = 'redes1uff'
+host = 'localhost'
 
-socketCliente = socket(AF_INET, SOCK_STREAM)
-socketCliente.connect((nomeServidor, portaServidor))
+try:
+    socketCliente = socket(AF_INET, SOCK_STREAM)
+    socketCliente.connect((host, portaServidor))
+    print("Conexão com o servidor estabelecida!")
+except:
+    print("Conexao com o servidor falhou")
+    sys.exit()
 
 # Tenta fazer o handshake do protocolo TCP para checar se conectou
 dados = socketCliente.recv(1024)
 
-print(dados)
+print(dados.decode())

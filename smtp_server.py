@@ -35,7 +35,7 @@ portaServidor = 587
 nomeServidor = ''
 socketServidor = socket(AF_INET, SOCK_STREAM)   # Declaracao default do socket
 socketServidor.bind((nomeServidor, portaServidor)) # faz o bind com a porta escolhida
-socketServidor.listen(1)
+socketServidor.listen(5)
 
 
 while True:
@@ -43,7 +43,8 @@ while True:
     try:
         # Tenta estabelecer conexao com o cliente
         socketConexao, addr = socketServidor.accept()
-        socketConexao.send("Conexao Estabelecida!")
+        mensagem_servidor = "Conexão do cliente aceita!"
+        socketConexao.send(mensagem_servidor.encode())
     except:
         print("Conexao Falhou")
         sys.exit()
