@@ -41,12 +41,21 @@ socketServidor.listen(5)
 while True:
     # Espera conexao com o cliente
     try:
-        # Tenta estabelecer conexao com o cliente
         socketConexao, addr = socketServidor.accept()
-        mensagem_servidor = "Conexão do cliente aceita!"
-        socketConexao.send(mensagem_servidor.encode())
+        print("Conexão do cliente aceita!")
     except:
         print("Conexao Falhou")
+        sys.exit()
+    
+    # receber o comando SMTP HELO enviado pelo cliente
+    try:
+        helo = socketConexao.recv(1024)
+        
+        if helo.decode() == 'HELO':
+            mensagem_servidor = 'OK - HELO recebido'
+            socketConexao.send(mensagem_servidor.encode())
+    except:
+        print('Erro no recebimento do HELO')
         sys.exit()
     
 

@@ -13,7 +13,16 @@ except:
     print("Conexao com o servidor falhou")
     sys.exit()
 
-# Tenta fazer o handshake do protocolo TCP para checar se conectou
-dados = socketCliente.recv(1024)
 
-print(dados.decode())
+# Envia o comando SMTP HELO para o servidor antes de realizar qualquer operação nele
+comando = 'HELO'
+socketCliente.send(comando.encode())
+
+respostaHELO = socketCliente.recv(1024)
+
+if respostaHELO.decode() != 'OK - HELO recebido':
+    print('Não houve resposta ao HELO')
+    socketCliente.close()
+    sys.exit()
+else:
+    print('Resposta ao HELO Recebida')
