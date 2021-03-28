@@ -68,7 +68,7 @@ while True:
         sys.exit()
     
     prontoParaRecebimento = False
-
+# TESTADO ATE AQUI==========================================
     #Recebe comando do cliente para decidir o que fazer
     comandoEMAIL = socketConexao.recv(1024)
     comandoEMAILdecoded = comandoEMAIL.decode()
@@ -98,7 +98,7 @@ while True:
             print("Aqui command unrecognized???1")
     #Talvez um elif aqui para leitura de email
     else:
-        ###Later
+        ###TODO - PARA LEITURA DE EMAILS
         print("Aqui command unrecognized???2")
     
     if prontoParaRecebimento:
