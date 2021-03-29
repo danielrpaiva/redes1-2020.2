@@ -42,12 +42,14 @@ else:
 if usrOp == 1: # Enviar email
     prontoParaEnvio = False
     # Enviar o comando SMTP: MAIL FROM para o servidor
-    socketCliente.send('MAIL FROM:<' + remetente + '>'.encode())
+    mailFromMsg = 'MAIL FROM:<' + remetente + '>'
+    socketCliente.send(mailFromMsg.encode())
     respostaMF = socketCliente.recv(1024)
 
     if respostaMF.decode() == '250 - MAIL FROM OK':
         # Enviar o comando SMTP: RCPT TO para o servidor
-        socketCliente.send('RCPT TO:<' + destinatario + '>'.encode())
+        rpctToMsg = 'RCPT TO:<' + destinatario + '>'
+        socketCliente.send(rpctToMsg.encode())
         respostaRT = socketCliente.recv(1024)
         if respostaRT.decode() == '250 - RCPT TO OK':
             prontoParaEnvio = True
