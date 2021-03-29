@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import sys
 from socket import *
 
@@ -44,7 +46,7 @@ if usrOp == 1: # Enviar email
     # Enviar o comando SMTP: MAIL FROM para o servidor
     socketCliente.send('MAIL FROM:<' + remetente + '>'.encode())
     respostaMF = socketCliente.recv(1024)
-
+    print(respostaMF)
     if respostaMF.decode() == '250 - MAIL FROM OK':
         # Enviar o comando SMTP: RCPT TO para o servidor
         socketCliente.send('RCPT TO:<' + destinatario + '>'.encode())
@@ -65,7 +67,20 @@ if usrOp == 1: # Enviar email
         respostaDATA = socketCliente.recv(1024)
         respostaDATAdecoded = respostaDATA.decode()
         if respostaDATAdecoded == '354 - Envie conteudo da mensagem':
-            socketCliente.send(corpoMsg.encode()) # TODO mensagem devera ser enviada aos poucos ate enviar "." para finalizar
+            mensagem = "remetente: "+remetente+"\ndestinatario: "+destinatario+"\nmensagem:\n"+corpoMsg
+
+            print(mensagem)
+
+            # enviando a mensagem aos poucos
+            enviados = 0
+            tamanho_msg = len(mensagem)
+            endmsg = "\r\n.\r\n"
+            while enviados < tamanho_msg:
+                parte_msg = mensagem[enviados:enviados+10]
+                socketCliente.send(parte_msg.encode())
+                enviados += len(parte_msg)
+                print(parte_msg)
+            socketCliente.send(endmsg.encode())
 
 elif usrOp == 2: # Ler email
     #codigo de leitura de email

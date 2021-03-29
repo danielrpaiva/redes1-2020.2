@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*- 
+
 import re
 import sys
 from socket import *
@@ -68,10 +70,10 @@ while True:
         sys.exit()
     
     prontoParaRecebimento = False
-# TESTADO ATE AQUI==========================================
+
     #Recebe comando do cliente para decidir o que fazer
     comandoEMAIL = socketConexao.recv(1024)
-    comandoEMAILdecoded = comandoEMAIL.decode()
+    comandoEMAILdecoded = comandoEMAIL.decode()    
 
     #Se receber um MAIL FROM o servidor sabe que é um envio de email
     if comandoEMAILdecoded[:9] == 'MAIL FROM':
@@ -81,11 +83,11 @@ while True:
             socketConexao.send('250 - MAIL FROM OK'.encode())
         else:
             socketConexao.send('Remetente Invalido'.encode())
-        
+
         #Recebe o RCPT TO do cliente
         comandoEMAIL = socketConexao.recv(1024)
         comandoEMAILdecoded = comandoEMAIL.decode()
-        
+
         if comandoEMAILdecoded[:7] == 'RCPT TO':
             destinatario = comandoEMAILdecoded[9:-1]
             #checa se o destinatario existe
@@ -96,6 +98,23 @@ while True:
                 socketConexao.send('Destinatario Invalido'.encode())
         else:
             print("Aqui command unrecognized???1")
+
+        #Recebe o comendao DATA
+        comandoDATA = socketConexao.recv(1024)
+        comandoDATAdecoded = comandoDATA.decode()
+        if comandoDATAdecoded == 'DATA':
+            print(comandoDATAdecoded)
+            socketConexao.send('354 - Envie conteudo da mensagem'.encode())
+            buffer = ""
+            parte_msg = ""
+            while parte_msg != "\r\n.\r\n":
+                data = socketConexao.recv(100)
+                parte_msg = data.decode()
+                buffer = buffer + parte_msg
+                print(parte_msg)
+        else:
+            print("Aqui command unrecognized???1")
+
     #Talvez um elif aqui para leitura de email
     else:
         ###TODO - PARA LEITURA DE EMAILS
