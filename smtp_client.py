@@ -2,16 +2,18 @@ import sys
 from socket import *
 
 #inputs do usuario
-print("Digite o número da operação que se deseja fazer?")
+print("Digite o número da operação que se deseja fazer")
 print("1 - Enviar Email")
 print("2 - Ler Emails")
 usrOp = int(input("Digite aqui o número da opção escolhida: "))
 
 if usrOp == 1:
-    remetente = input("Digite o email do remetente(mesmo nome do arquivo txt da caixa de entrada):")
-    destinatario = input("Digite o email do destinatario(mesmo nome do arquivo txt da caixa de entrada):")
+    remetente = input("Digite o seu email (remetente, mesmo nome do arquivo txt da caixa de entrada):")
+    destinatario = input("Digite o email do destinatario (mesmo nome do arquivo txt da caixa de entrada):")
     corpoMsg = input("Digite a mensagem que deseja enviar:")
 
+if usrOp == 2:
+    usrLeitor = input("Digite o seu email (mesmo nome do arquivo txt):")
 
 portaServidor = 25
 host = 'localhost'
@@ -70,8 +72,15 @@ if usrOp == 1: # Enviar email
             socketCliente.send(corpoMsg.encode()) # TODO mensagem devera ser enviada aos poucos ate enviar "." para finalizar
 
 elif usrOp == 2: # Ler email
-    #codigo de leitura de email
-    print("op2")
+    #Protocolo de acesso de email onde o destinatário obtém suas mensagens do servidor não segue o protocolo SMTP
+    leituraUsr = "READ:" + usrLeitor
+    socketCliente.send(leituraUsr.encode())
+
+    respostaLeitura = socketCliente.recv(4096)
+    respostaLeituraDecoded = respostaLeitura.decode()
+
+    print(respostaLeituraDecoded)
+
 else:
     print("Operação inválida, digite apenas o número da operação")
     sys.exit()
