@@ -137,14 +137,17 @@ while True:
     
     # Comando READ foi arbitrado para o servidor reconhecer uma leitura
     elif len(comandoEMAILdecoded) >= 4 and comandoEMAILdecoded[:4] == 'READ':
-        #print("Entrou no ELIF READ")
         cxLeitura = comandoEMAILdecoded[5:]
-
-        dadosCx = lerMsg(cxLeitura)
-        if dadosCx == '':
-            dadosCx = 'THIS INBOX IS EMPTY'
         
-        socketConexao.send(dadosCx.encode())
+        if cxLeitura in caixas:
+            dadosCx = lerMsg(cxLeitura)
+            if dadosCx == '':
+                dadosCx = 'THIS INBOX IS EMPTY'
+            
+            socketConexao.send(dadosCx.encode())
+            
+        else:
+            socketConexao.send('550 Inbox Address Unknown'.encode())
 
     
     elif comandoEMAILdecoded == 'QUIT':
