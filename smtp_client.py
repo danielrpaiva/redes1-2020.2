@@ -71,20 +71,13 @@ if usrOp == 1: # Enviar email
         respostaDATA = socketCliente.recv(1024)
         respostaDATAdecoded = respostaDATA.decode()
         if respostaDATAdecoded == '354 - Envie conteudo da mensagem':
-            mensagem = "remetente: "+remetente+"\ndestinatario: "+destinatario+"\nmensagem:\n"+corpoMsg
-
+            mensagem = "\r\nremetente: "+remetente+"\ndestinatario: "+destinatario+"\nmensagem:\n"+corpoMsg+"\r\n.\r\n" 
             print(mensagem)
-
-            # enviando a mensagem aos poucos
-            enviados = 0
-            tamanho_msg = len(mensagem)
-            endmsg = "\r\n.\r\n"
-            while enviados < tamanho_msg:
-                parte_msg = mensagem[enviados:enviados+10]
-                socketCliente.send(parte_msg.encode())
-                enviados += len(parte_msg)
-                print(parte_msg)
-            socketCliente.send(endmsg.encode())
+            socketCliente.sendall(mensagem)
+    
+    okEnd = socketCliente.recv(1024)
+    if okEnd.decode() == '250 OK': 
+        print(okEnd)
 
 elif usrOp == 2: # Ler email
     #Protocolo de acesso de email onde o destinatário obtém suas mensagens do servidor não segue o protocolo SMTP

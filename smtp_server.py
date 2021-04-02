@@ -106,19 +106,16 @@ while True:
         else:
             print("Aqui command unrecognized???1")
 
-        #Recebe o comendao DATA
+        #Recebe o DATA
         comandoDATA = socketConexao.recv(1024)
         comandoDATAdecoded = comandoDATA.decode()
         if comandoDATAdecoded == 'DATA':
             print(comandoDATAdecoded)
             socketConexao.send('354 - Envie conteudo da mensagem'.encode())
-            buffer = ""
-            parte_msg = ""
-            while parte_msg != "\r\n.\r\n":
-                data = socketConexao.recv(1024)
-                parte_msg = data.decode()
-                buffer = buffer + parte_msg
-                print(parte_msg)
+            data = socketConexao.recv(1024)
+            print(data[-3])
+            if data[-3] == '.':
+                socketConexao.send('250 OK'.encode())
         else:
             print("Aqui command unrecognized???1")
 
@@ -135,17 +132,17 @@ while True:
     else:
         print("Aqui command unrecognized???2")
     
-    if prontoParaRecebimento:
-        comandoDATA = socketConexao.recv(1024)
-        comandoDATAdecoded = comandoDATA.decode()
-        if comandoDATAdecoded == 'DATA':
-            socketConexao.send('354 - Envie conteudo da mensagem'.encode())
-            corpo = socketConexao.recv(1024)
-            corpoDecoded = corpo.decode()
-            escreverMsg(destinatario, corpoDecoded) # TODO servidor deve esperar um "." para parar de escrever
+    # if prontoParaRecebimento:
+    #     comandoDATA = socketConexao.recv(1024)
+    #     comandoDATAdecoded = comandoDATA.decode()
+    #     if comandoDATAdecoded == 'DATA':
+    #         socketConexao.send('354 - Envie conteudo da mensagem'.encode())
+    #         corpo = socketConexao.recv(1024)
+    #         corpoDecoded = corpo.decode()
+    #         escreverMsg(destinatario, corpoDecoded) # TODO servidor deve esperar um "." para parar de escrever
 
-        else:
-            print("Aqui command unrecognized???3")
+    #     else:
+    #         print("Aqui command unrecognized???3")
 
 
         
