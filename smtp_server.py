@@ -12,6 +12,13 @@ def escreverMsg(dest, msg):
     cxDest.close()
     return
 
+def lerMsg(dest):
+    nomeCx = dest + ".txt"
+    cxDest = open(nomeCx, "r")
+    fullFile = cxDest.read()
+    cxDest.close()
+    return fullFile
+
 # Arquivo deve ser passado como argumento de linha de comando como especificado
 if len(sys.argv) < 2:
     print("Para executar, digite no terminal: python script.py usuarios.txt")
@@ -76,7 +83,7 @@ while True:
     comandoEMAILdecoded = comandoEMAIL.decode()    
 
     #Se receber um MAIL FROM o servidor sabe que é um envio de email
-    if comandoEMAILdecoded[:9] == 'MAIL FROM':
+    if len(comandoEMAILdecoded) >= 9 and comandoEMAILdecoded[:9] == 'MAIL FROM':
         remetente = comandoEMAILdecoded[11:-1]
         #checa se o remetente existe
         if remetente in caixas:
@@ -98,6 +105,7 @@ while True:
                 socketConexao.send('Destinatario Invalido'.encode())
         else:
             print("Aqui command unrecognized???1")
+<<<<<<< HEAD
 
         #Recebe o comendao DATA
         comandoDATA = socketConexao.recv(1024)
@@ -116,8 +124,19 @@ while True:
             print("Aqui command unrecognized???1")
 
     #Talvez um elif aqui para leitura de email
+=======
+    
+    # Comando READ foi arbitrado para o servidor reconhecer uma leitura
+    elif len(comandoEMAILdecoded) >= 4 and comandoEMAILdecoded[:4] == 'READ':
+        cxLeitura = comandoEMAILdecoded[5:]
+
+        dadosCx = lerMsg(cxLeitura)
+
+        socketConexao.send(dadosCx.encode())
+
+
+>>>>>>> 61d8bb733bc397a0532c565ef93b7e7460082aa2
     else:
-        ###TODO - PARA LEITURA DE EMAILS
         print("Aqui command unrecognized???2")
     
     if prontoParaRecebimento:
