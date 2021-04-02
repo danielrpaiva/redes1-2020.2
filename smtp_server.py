@@ -1,4 +1,4 @@
-#import re
+import re
 import sys
 from socket import *
 
@@ -17,6 +17,20 @@ def lerMsg(dest):
     cxDest.close()
     return fullFile
 
+def checkFormatFile(file):
+    lines = file.readlines()
+    lastLine = lines[-1]
+    isValid = False
+    for line in lines:
+        if bool(re.match("^<[a-zA-Z0-9-_.@]*>(\n|)$", line)):
+            isValid = True
+        else:
+            isValid = False
+            break
+        #print("isValid: "+str(isValid))
+        #print("linha: "+line)
+    return isValid
+
 # Arquivo deve ser passado como argumento de linha de comando como especificado
 if len(sys.argv) < 2:
     print("Arquivo com os usuários não encontrado. DICA: Para executar digite no terminal: python script.py nome_arq_usuarios.txt")
@@ -28,6 +42,17 @@ usrs = open(sys.argv[1], "r")
 
 #Armazena o nome das caixas de entrada
 caixas = []
+
+valido = checkFormatFile(usrs)
+
+usrs.seek(0)
+
+#print(valido)
+
+if valido == False:
+    print("Formato do arquivo passado não é valido, abortando..")
+    usrs.close()
+    sys.exit()
 
 #Cria as caixas de entrada
 for line in usrs:
@@ -108,7 +133,7 @@ while True:
             else:
                 socketConexao.send('550 Receiver Address Unknown'.encode())
         else:
-            print("Aqui command unrecognized???1")
+            print("500 Syntax error, command unrecognized")
     
     # Comando READ foi arbitrado para o servidor reconhecer uma leitura
     elif len(comandoEMAILdecoded) >= 4 and comandoEMAILdecoded[:4] == 'READ':
@@ -121,25 +146,25 @@ while True:
         
         socketConexao.send(dadosCx.encode())
 
-    #Comando BYE arbitrado para o servidor reconhecer um disconnect
-    elif comandoEMAILdecoded == 'BYE':
-        socketConexao.send('BYE CLIENT'.encode())
+    
+    elif comandoEMAILdecoded == 'QUIT':
+        socketConexao.send('221 - Disconnecting..'.encode())
         isConnected = False
 
     else:
-        print("Aqui command unrecognized???2")
+        print("500 Syntax error, command unrecognized")
     
     if prontoParaRecebimento:
         comandoDATA = socketConexao.recv(1024)
         comandoDATAdecoded = comandoDATA.decode()
         if comandoDATAdecoded == 'DATA':
             socketConexao.send('354 - Envie conteudo da mensagem'.encode())
-            corpo = socketConexao.recv(1024)
-            corpoDecoded = corpo.decode()
-            escreverMsg(destinatario, corpoDecoded) # TODO servidor deve esperar um "." para parar de escrever
+            dado = socketConexao.recv(1024)
+            dadoDecoded = dado.decode()
+            escreverMsg(destinatario, dadoDecoded) # TODO servidor deve esperar um "." para parar de escrever
 
         else:
-            print("Aqui command unrecognized???3")
+            print("500 Syntax error, command unrecognized")
 
 
         

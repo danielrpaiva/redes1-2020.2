@@ -41,8 +41,9 @@ while True:
 
 
     if usrOp == 3:
-        socketCliente.send('BYE'.encode())
+        socketCliente.send('QUIT'.encode())
         respostaBYE = socketCliente.recv(1024)
+        print(respostaBYE.decode())
         socketCliente.close()
         print("Conexao Interrompida pelo usuário!")
         sys.exit()
