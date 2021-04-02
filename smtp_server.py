@@ -108,7 +108,7 @@ while True:
             buffer = ""
             parte_msg = ""
             while parte_msg != "\r\n.\r\n":
-                data = socketConexao.recv(100)
+                data = socketConexao.recv(1024)
                 parte_msg = data.decode()
                 buffer = buffer + parte_msg
                 print(parte_msg)
