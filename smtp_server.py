@@ -1,4 +1,4 @@
-import re
+#import re
 import sys
 from socket import *
 
@@ -19,8 +19,8 @@ def lerMsg(dest):
 
 # Arquivo deve ser passado como argumento de linha de comando como especificado
 if len(sys.argv) < 2:
-    print("Para executar, digite no terminal: python script.py usuarios.txt")
-    quit()
+    print("Arquivo com os usuários não encontrado. DICA: Para executar digite no terminal: python script.py nome_arq_usuarios.txt")
+    sys.exit()
 
 
 # Le o arquivo e gera as caixas de entrada
@@ -33,9 +33,9 @@ caixas = []
 for line in usrs:
     
     if line[-1] == "\n":
-        nome_cx = line[:-1] + ".txt"
+        nome_cx = line[1:-2] + ".txt"
     else:
-        nome_cx = line + ".txt"
+        nome_cx = line[1:-1] + ".txt"
     
     caixas.append(nome_cx[:-4])
     f = open(nome_cx, "w")
@@ -52,15 +52,20 @@ socketServidor = socket(AF_INET, SOCK_STREAM)   # Declaracao default do socket
 socketServidor.bind((nomeServidor, portaServidor)) # faz o bind com a porta escolhida
 socketServidor.listen(5)
 
+isConnected = False
 
 while True:
-    # Espera conexao com o cliente
-    try:
-        socketConexao, addr = socketServidor.accept()
-        print("220 OK - Conexão do cliente aceita!")
-    except:
-        print("Conexao Falhou")
-        sys.exit()
+    # Checa se o cliente ja esta conectado
+    if isConnected == False:
+        # Espera conexao com o cliente
+        try:
+            socketConexao, addr = socketServidor.accept()
+            socketConexao.send('220 OK - Conexao estabelecida'.encode())
+            print("220 OK - Conexão do cliente aceita!")
+            isConnected = True
+        except:
+            print("Conexao Falhou")
+            sys.exit()
     
     # receber o comando SMTP HELO enviado pelo cliente
     try:
@@ -79,7 +84,7 @@ while True:
     #Recebe comando do cliente para decidir o que fazer
     comandoEMAIL = socketConexao.recv(1024)
     comandoEMAILdecoded = comandoEMAIL.decode()
-
+    #print("COMANDO:", comandoEMAILdecoded)
     #Se receber um MAIL FROM o servidor sabe que é um envio de email
     if len(comandoEMAILdecoded) >= 9 and comandoEMAILdecoded[:9] == 'MAIL FROM':
         remetente = comandoEMAILdecoded[11:-1]
@@ -87,7 +92,8 @@ while True:
         if remetente in caixas:
             socketConexao.send('250 - MAIL FROM OK'.encode())
         else:
-            socketConexao.send('Remetente Invalido'.encode())
+            socketConexao.send('550 Sender Address Unknown'.encode())
+            continue
         
         #Recebe o RCPT TO do cliente
         comandoEMAIL = socketConexao.recv(1024)
@@ -100,18 +106,25 @@ while True:
                 socketConexao.send('250 - RCPT TO OK'.encode())
                 prontoParaRecebimento = True
             else:
-                socketConexao.send('Destinatario Invalido'.encode())
+                socketConexao.send('550 Receiver Address Unknown'.encode())
         else:
             print("Aqui command unrecognized???1")
     
     # Comando READ foi arbitrado para o servidor reconhecer uma leitura
     elif len(comandoEMAILdecoded) >= 4 and comandoEMAILdecoded[:4] == 'READ':
+        #print("Entrou no ELIF READ")
         cxLeitura = comandoEMAILdecoded[5:]
 
         dadosCx = lerMsg(cxLeitura)
-
+        if dadosCx == '':
+            dadosCx = 'THIS INBOX IS EMPTY'
+        
         socketConexao.send(dadosCx.encode())
 
+    #Comando BYE arbitrado para o servidor reconhecer um disconnect
+    elif comandoEMAILdecoded == 'BYE':
+        socketConexao.send('BYE CLIENT'.encode())
+        isConnected = False
 
     else:
         print("Aqui command unrecognized???2")
