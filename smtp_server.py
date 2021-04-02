@@ -19,6 +19,20 @@ def lerMsg(dest):
     cxDest.close()
     return fullFile
 
+def checkFormatFile(file):
+    lines = file.readlines()
+    lastLine = lines[-1]
+    isValid = False
+    for line in lines:
+        if bool(re.match("^<[a-zA-Z0-9-_.@]*>(\n|)$", line)):
+            isValid = True
+        else:
+            isValid = False
+        print("isValid: "+str(isValid))
+        print("linha: "+line)
+    return isValid 
+
+
 # Arquivo deve ser passado como argumento de linha de comando como especificado
 if len(sys.argv) < 2:
     print("Para executar, digite no terminal: python script.py usuarios.txt")
@@ -27,6 +41,7 @@ if len(sys.argv) < 2:
 
 # Le o arquivo e gera as caixas de entrada
 usrs = open(sys.argv[1], "r")
+checkFormatFile(usrs)
 
 #Armazena o nome das caixas de entrada
 caixas = []
