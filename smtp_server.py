@@ -5,7 +5,7 @@ from socket import *
 def escreverMsg(dest, msg):
     nomeCx = dest + ".txt"
     cxDest = open(nomeCx, "a")
-    full = msg + '\n\n'
+    full = msg
     cxDest.write(full)
     cxDest.close()
     return
@@ -161,7 +161,7 @@ while True:
             socketConexao.send('354 - Envie conteudo da mensagem'.encode())
             dado = socketConexao.recv(1024)
             dadoDecoded = dado.decode()
-            escreverMsg(destinatario, dadoDecoded) # TODO servidor deve esperar um "." para parar de escrever
+            escreverMsg(destinatario, dadoDecoded)
 
         else:
             print("500 Syntax error, command unrecognized")

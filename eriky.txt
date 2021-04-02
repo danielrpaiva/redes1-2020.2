@@ -1,0 +1,10 @@
+remetente: daniel
+destinatario: eriky
+mensagem:
+ABC
+.
+remetente: roberto
+destinatario: eriky
+mensagem:
+CDE
+.

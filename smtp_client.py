@@ -82,8 +82,9 @@ while True:
             respostaDATAdecoded = respostaDATA.decode()
             if respostaDATAdecoded == '354 - Envie conteudo da mensagem':
                 print(respostaDATAdecoded)
-                socketCliente.send(corpoMsg.encode()) # TODO mensagem devera ser enviada aos poucos ate enviar "." para finalizar
-
+                msgFull = "\rremetente: "+remetente+"\ndestinatario: "+destinatario+"\nmensagem:\n"+corpoMsg+"\r\n.\r\n"
+                socketCliente.sendall(msgFull.encode())
+                
         continue
 
     elif usrOp == 2: # Ler email
